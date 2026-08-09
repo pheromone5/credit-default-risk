@@ -1,0 +1,23 @@
+APPROVAL POLICY (holdout)
+  assumptions: margin 12% of principal on a good loan, loss given default 65%
+  closed-form break-even PD: 15.6%
+  empirical profit-optimal cut-off: PD <= 0.180
+  -> approves 90.8% of applicants (3,631 of 4,000)
+  -> default rate among approved 6.22% vs 7.98% if everyone is approved (22% reduction)
+  -> expected profit 113,597,790 vs 103,293,950 under approve-everyone
+  at 48% approval: bad rate 2.60%, cut-off PD 0.059
+  at 66% approval: bad rate 3.87%, cut-off PD 0.085
+  at 90% approval: bad rate 6.19%, cut-off PD 0.166
+
+STABILITY (dev vs holdout; a random split, so near-zero is expected)
+  model score                      PSI 0.0016  stable
+  INS_RECENT_DAYS_LATE_MEAN        PSI 0.0032  stable
+  EXT_SOURCE_2                     PSI 0.0020  stable
+  INS_RECENT_DAYS_LATE_MAX         PSI 0.0025  stable
+  EXT_SOURCE_MEAN                  PSI 0.0025  stable
+  EXT_SOURCE_MIN                   PSI 0.0013  stable
+  DAYS_EMPLOYED                    PSI 0.0049  stable
+  EXT_SOURCE_STD                   PSI 0.0029  stable
+  AMT_INCOME_TOTAL                 PSI 0.0027  stable
+  EXT_SOURCE_3                     PSI 0.0030  stable
+  INS_PAYMENT_RATIO_STD            PSI 0.0018  stable

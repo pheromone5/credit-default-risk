@@ -1,0 +1,13 @@
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14.0
+scikit-learn>=1.4
+lightgbm>=4.0
+torch>=2.0
+shap>=0.44
+matplotlib>=3.8
+tabulate>=0.9
+
+# optional
+pyspark>=3.5          # only needed for features_spark.py
+imbalanced-learn>=0.12  # only needed for train_lgbm.py --imbalance smote
