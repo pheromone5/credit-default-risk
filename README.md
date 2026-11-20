@@ -3,7 +3,9 @@
 End-to-end loan default prediction pipeline: feature engineering, baseline and sequence models, calibrated ensembling, SHAP explanations, and a profit-based approval policy.
 
 ## Overview
-The pipeline (in `finance/`) predicts the probability that an applicant defaults and turns that probability into a lending decision. It is built around Home Credit-style tables (`application_train`, `bureau`, `previous_application`, `installments_payments`, `credit_card_balance`, `POS_CASH_balance`). The raw data is not included in this repo; place it in `finance/data/raw/`.
+The pipeline (in `finance/`) predicts the probability that an applicant defaults and turns that probability into a lending decision. It uses the schema of the [Home Credit Default Risk](https://www.kaggle.com/c/home-credit-default-risk) tables (`application_train`, `bureau`, `previous_application`, `installments_payments`, `credit_card_balance`, `POS_CASH_balance`).
+
+The real dataset (about 2.5 GB, behind a Kaggle login) is not included. `synth_data.py` generates synthetic files with the same names, columns and dtypes, so the whole pipeline runs end to end without it. To use the real data, put the CSVs in `finance/data/raw/` and run with `--skip-synth`.
 
 ## Models
 - Logistic regression (baseline)
@@ -11,19 +13,13 @@ The pipeline (in `finance/`) predicts the probability that an applicant defaults
 - GRU sequence model on 24-step payment histories
 - Calibrated blend of the above (`blend_calibrate.py`)
 
-## Results
-Validation metrics from `finance/artifacts/results.json`:
+## What the pipeline produces
+- Cross-validated and holdout metrics per model: AUC, Gini, KS, PR-AUC, Brier (`artifacts/results.json`)
+- SHAP and LightGBM feature importance, plus per-applicant adverse-action reasons
+- Decile table and PSI stability checks
+- A profit-optimal approval cut-off, from assumed profit per good loan and loss given default (`reports/policy_summary.txt`)
 
-| Model | AUC | Brier |
-|---|---|---|
-| Logistic | 0.696 | 0.219 |
-| LightGBM | 0.708 | 0.107 |
-| GRU | 0.714 | 0.217 |
-| **Calibrated ensemble** | **0.743** | **0.069** |
-
-The ensemble reaches Gini 0.485 and KS 0.375.
-
-**Business policy** (`finance/reports/policy_summary.txt`): with an assumed 12% profit per good loan and 65% loss given default, the break-even PD is 15.6%. A cut-off of PD <= 0.18 approves 90.8% of applicants and lowers the default rate among approved loans from 7.98% to 6.22%. Model score PSI is 0.0016 (stable).
+> **Note:** The artifacts committed here come from a run on **synthetic data**. They show that the pipeline works end to end, but they are not real model performance. The synthetic generator deliberately builds in a signal that favours the sequence model, so the model ranking will differ on real data. Re-run with `--skip-synth` on the real Kaggle data before quoting any results.
 
 ## Project structure
 ```
@@ -39,7 +35,9 @@ finance/
 ## Run it
 ```bash
 pip install -r finance/requirements.txt
-python finance/src/run_all.py
+python finance/src/run_all.py                 # synthetic data, pandas features
+python finance/src/run_all.py --skip-synth    # real Kaggle CSVs in finance/data/raw/
+python finance/src/run_all.py --engine spark  # PySpark feature aggregation
 ```
 Optional: `pyspark` for `features_spark.py`, `imbalanced-learn` for SMOTE.
 
